@@ -5,9 +5,9 @@
  */
 public class Quicksort {
 	
-	private static final int SIZE = 10000000;
+	private static final int SIZE = 5000000;
 	private static final int LIMIT = 15;
-	private static final int TESTS = 20;
+	private static final int TESTS = 5;
 	private static boolean useInsertionSort = false;
 	
 	public static void main(String[] args) {
@@ -42,7 +42,12 @@ public class Quicksort {
 			System.out.println("Quick sort with median pivot and insertion sort: " + speed2 + " ms");
 			
 			long diff = speed1 - speed2;
-			double percentage = 100 - (100 * speed2 / speed1);
+			double percentage;
+			if (speed1 != 0) {
+				percentage = 100 - (100 * speed2 / speed1);
+			} else {
+				percentage = 0;
+			}
 			System.out.println("Speed increase: " + diff + " ms");
 			System.out.println("Speed increase: " + percentage + "%");
 			
@@ -75,7 +80,7 @@ public class Quicksort {
 	}
 	
 	private static int partition(int[] array, int l, int r) {
-		// Find the pivot which is the median of 0, n/2 and n - 1
+		// Find the pivot which is the median of max(0, n/2, n - 1)
 		int pivot = median(array, l, r);
 		
 		// Sort the sub array
