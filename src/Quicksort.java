@@ -1,11 +1,55 @@
-import java.util.Arrays;
-
+/**
+ * @author Tim Mikeladze
+ * 
+ * 
+ */
 public class Quicksort {
 	
+	private static final int SIZE = 10000000;
+	private static final int LIMIT = 15;
+	private static final int TESTS = 20;
+	private static boolean useInsertionSort = false;
+	
 	public static void main(String[] args) {
-		int[] array = { 35, 98, 86, 6, 23, 840, 11, 93, 95, 8, 3, 7, 36, 361, 5, 52, 53, 83, 80, 390, 620, 1, 40, 872, 40, 768, 30, 4, 99, 9 };
-		quickSort(array);
-		System.out.print(Arrays.toString(array));
+		// Runs speed tests comparing a Quick sort with a median pivot and a Quick sort with a median pivot combined with an Insertion sort for smaller subarrays
+		
+		double average = 0;
+		for (int i = 1; i <= TESTS; i++) {
+			System.out.println("Test " + i);
+			int[] array1 = generateRandomArray(SIZE);
+			int[] array2 = new int[array1.length];
+			
+			System.arraycopy(array1, 0, array2, 0, array1.length);
+			
+			long start = 0;
+			long speed1 = 0;
+			long speed2 = 0;
+			
+			useInsertionSort = false;
+			start = System.currentTimeMillis();
+			
+			quickSort(array1);
+			
+			speed1 = System.currentTimeMillis() - start;
+			System.out.println("Quick sort with median pivot: " + speed1 + " ms");
+			
+			useInsertionSort = true;
+			start = System.currentTimeMillis();
+			
+			quickSort(array2);
+			
+			speed2 = System.currentTimeMillis() - start;
+			System.out.println("Quick sort with median pivot and insertion sort: " + speed2 + " ms");
+			
+			long diff = speed1 - speed2;
+			double percentage = 100 - (100 * speed2 / speed1);
+			System.out.println("Speed increase: " + diff + " ms");
+			System.out.println("Speed increase: " + percentage + "%");
+			
+			average += percentage;
+		}
+		
+		System.out.println("\nAverage speed increase: " + (average / TESTS) + "%");
 	}
 	
 	public static void quickSort(int[] input) {
@@ -14,8 +58,7 @@ public class Quicksort {
 	
 	private static void quickSort(int[] array, int l, int r) {
 		// Insertion sort is faster than Quick sort on smaller data sets
-		// Here we use insertion sort if array is 10 elements or less
-		if (l + 10 <= r) {
+		if ((l + LIMIT <= r && useInsertionSort) || !useInsertionSort) {
 			// Partition the array into sub arrays and recursively sort each one
 			int partition = partition(array, l, r);
 			if (l < partition - 1) {
@@ -75,5 +118,13 @@ public class Quicksort {
 			array[i + 1] = value;
 			l++;
 		}
+	}
+	
+	private static int[] generateRandomArray(int size) {
+		int array[] = new int[size];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = (int) (Math.random() * (size));
+		}
+		return array;
 	}
 }
