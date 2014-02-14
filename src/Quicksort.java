@@ -8,7 +8,6 @@ public class Quicksort {
 	private static final int SIZE = 5000000;
 	private static final int LIMIT = 15;
 	private static final int TESTS = 5;
-	private static boolean useInsertionSort = false;
 	
 	public static void main(String[] args) {
 		// Runs speed tests comparing a Quick sort with a median pivot and a Quick sort with a median pivot combined with an Insertion sort for smaller subarrays
@@ -25,7 +24,6 @@ public class Quicksort {
 			long speed1 = 0;
 			long speed2 = 0;
 			
-			useInsertionSort = false;
 			start = System.currentTimeMillis();
 			
 			quickSort(array1);
@@ -33,10 +31,9 @@ public class Quicksort {
 			speed1 = System.currentTimeMillis() - start;
 			System.out.println("Quick sort with median pivot: " + speed1 + " ms");
 			
-			useInsertionSort = true;
 			start = System.currentTimeMillis();
 			
-			quickSort(array2);
+			quickSortWithInserstionSort(array2);
 			
 			speed2 = System.currentTimeMillis() - start;
 			System.out.println("Quick sort with median pivot and insertion sort: " + speed2 + " ms");
@@ -62,21 +59,35 @@ public class Quicksort {
 	}
 	
 	private static void quickSort(int[] array, int l, int r) {
+		// Partition the array into sub arrays and recursively sort each one
+		int partition = partition(array, l, r);
+		if (l < partition - 1) {
+			quickSort(array, l, partition - 1);
+		}
+		if (r > partition) {
+			quickSort(array, partition, r);
+		}
+	}
+	
+	public static void quickSortWithInserstionSort(int[] input) {
+		quickSortWithInserstionSort(input, 0, input.length - 1);
+	}
+	
+	private static void quickSortWithInserstionSort(int[] array, int l, int r) {
 		// Insertion sort is faster than Quick sort on smaller data sets
-		if ((l + LIMIT <= r && useInsertionSort) || !useInsertionSort) {
+		if (l + LIMIT <= r) {
 			// Partition the array into sub arrays and recursively sort each one
 			int partition = partition(array, l, r);
 			if (l < partition - 1) {
-				quickSort(array, l, partition - 1);
+				quickSortWithInserstionSort(array, l, partition - 1);
 			}
 			if (r > partition) {
-				quickSort(array, partition, r);
+				quickSortWithInserstionSort(array, partition, r);
 			}
 		} else {
 			// Insertion sort is only used for small data sets
 			insertionSort(array, l, r);
 		}
-		
 	}
 	
 	private static int partition(int[] array, int l, int r) {
